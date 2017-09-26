@@ -7,10 +7,10 @@ def load_word():
 
    words_list = words_list[0].split(' ')
    secret_word = random.choice(words_list)
-   secret_letters = list(secret_word)
+   # secret_letters = list(secret_word)
    return secret_word
 
-def is_word_guessed(secret_word, letters_guessed):
+def is_word_guessed(secret_word, current_guess, word_reveal):
 
     i = 0
 
@@ -47,32 +47,42 @@ def get_guessed_word(secret_word, letters_guessed):
 def hangman(secret_word):
 
     wrong_guesses = 0
+    letters_guessed = ""
 
-    print "Guess letters and try not to hang yourself! You have six (6) guesses!"
-    print "There are " + str(len(secret_word) - int(letters_guessed)) + " letters left!"
+    print "Guess letters and try not to hang yourself! You have six (6) wrong guesses!"
+    # print "There are " + str(len(secret_word) - int(letters_guessed)) + " letters left!"
+
+    word_reveal = get_guessed_word(secret_word, letters_guessed)
 
     while wrong_guesses < 6:
+        print "Current Progress: " + str(len(secret_word))
         current_guess = raw_input("Enter a letter here: ")
 
-        if (current_guess is in secret_word) and (current_guess is in available_letters):
+        if (current_guess in secret_word) and (current_guess not in letters_guessed):
             print "Good guess! One step closer to victory and freedom!"
             letters_guessed += current_guess + ". "
-            print "Current Progress: " + word_reveal #This will probably not work
+            print "Current Progress: " + is_word_guessed(secret_word, current_guess, word_reveal) #This will probably not work
 
 
-        elif (current_guess is not in secret_word) and (current_guess is in available_letters):
+        elif (current_guess not in secret_word) and (current_guess not in letters_guessed) and (wrong_guesses <= 5):
             wrong_guesses += 1
             print "Bad guess! One step closer to failure and death..."
-            print "Current Progress: " + word_reveal #This will probably not work
+            letters_guessed += current_guess + ". "
+            print "Current Progress: " + is_word_guessed(secret_word, current_guess, word_reveal) #This will probably not work
 
         else:
             print "Poor guess. Try again and pick a letter you haven't already picked!"
-            print "Current Progress: " + word_reveal #This will probably not work
+            print "Current Progress: " + is_word_guessed(secret_word, current_guess, word_reveal) #This will probably not work
 
         if "".join(word_reveal) == secret_word:
             print "Good job escaping the hangman's noose!"
             print "You win!"
             break
 
-secretWord = loadWord()
-hangman(loadWord())
+    if wrong_guesses == 6:
+        print "The noose tightens around your neck and darkness consumes you..."
+        print "You have failed! Try again later."
+
+
+secret_word = load_word()
+hangman(load_word())
